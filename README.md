@@ -26,20 +26,24 @@ on the exact id `n8n` unless you give it a project.
   package in this same marketplace, `bin/provision.sh` already minted and set this for you under
   that project — in that case there's nothing to do here but attach it (next section).
 
-  **Set it with the `Bearer ` prefix already on it**, not the bare token:
+  **Set it to the bare token**, exactly as n8n showed it to you — never with `Bearer ` written
+  into it:
 
   ```sh
-  adi-mono secrets set N8N_MCP_ACCESS_TOKEN "Bearer <the token n8n showed you>" --project <id>
+  adi-mono secrets set N8N_MCP_ACCESS_TOKEN "<the token n8n showed you>" --project <id>
   ```
 
-  This is the one sharp edge in the native `mcp` kind as it stands today: a header value named by
-  `{ secret = "..." }` resolves to that secret's *raw* value, substituted verbatim into the
-  `Authorization` header — there's no way for a definition to say "prefix it with `Bearer `"
-  (`crates/adi-mcp/src/transport.rs`'s `Value` is a whole literal or a whole secret reference,
-  never a template of the two). n8n's own MCP middleware refuses a request missing that prefix
-  outright ("Missing Bearer prefix"), so the secret's stored *value* has to carry it. If a later
-  ADI release adds header templating, this note — and the `Bearer ` prefix in the value — stops
-  being necessary; until then, it's the only way this actually authenticates.
+  The bundled `mcp/n8n.toml` names this secret with a `prefix`:
+
+  ```toml
+  Authorization = { secret = "N8N_MCP_ACCESS_TOKEN", prefix = "Bearer " }
+  ```
+
+  so `Bearer ` is glued onto the secret's resolved value at launch — the header n8n's MCP
+  middleware actually checks for is built for you, and the stored secret stays the plain token
+  n8n handed out (also what `process:codex`'s own bearer-token knob needs, raw). The CLI
+  equivalent of the line above is `adi-mono mcp save n8n --header
+  "Authorization=bearer:N8N_MCP_ACCESS_TOKEN"` — see "Pointing it at a different n8n" below.
 
 - The agent needs the secret **attached**, not just the server declaring it — registering a
   secret name on an `mcp` element never hands it to anybody (same rule a tool's `bin_tools`
@@ -56,7 +60,7 @@ this, no file edit required:
 
 ```sh
 adi-mono mcp save n8n --url https://your-instance.app.n8n.cloud/mcp-server/http \
-  --header "Authorization=secret:N8N_MCP_ACCESS_TOKEN"
+  --header "Authorization=bearer:N8N_MCP_ACCESS_TOKEN"
 ```
 
 (`adi-mono mcp show n8n` to confirm what's currently set.) Works with the `n8n` package here, or

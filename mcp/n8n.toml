@@ -6,4 +6,4 @@ kind = "http"
 url = "http://n8n.adi/mcp-server/http"
 
 [transport.headers]
-Authorization = { secret = "N8N_MCP_ACCESS_TOKEN" }
+Authorization = { secret = "N8N_MCP_ACCESS_TOKEN", prefix = "Bearer " }
