@@ -8,6 +8,8 @@ instance-level MCP server. No hive service of its own — this bundle is two ele
 | mcp | `n8n` | the MCP server definition: n8n's streamable-HTTP endpoint, bearer auth |
 | agent | `n8n-operator` | `harness:claude-sdk`, attached to the `n8n` server above |
 
+**Guides:** [n8n → ADI → n8n: process data in ADI and send the result back](https://docs.withadi.dev/n8n-to-adi/) — this bundle covers ADI driving n8n; that guide covers the other direction, n8n handing data to an ADI agent.
+
 ## Install it
 
 ```sh
